@@ -1,0 +1,121 @@
+name: build example
+on:
+  workflow_dispatch:
+    inputs:
+      flutter_version:
+        description: "Flutter Version"
+        required: false
+        default: "any"
+        type: choice
+        options:
+          - "any"
+          - "3.27.x"
+          - "3.24.x"
+          - "3.22.x"
+      flutter_channel:
+        description: "Flutter Channel"
+        required: false
+        default: "stable"
+        type: choice
+        options:
+          - "stable"
+          - "beta"
+          - "dev"
+          - "master"
+      enable_android:
+        description: "Build Android"
+        required: false
+        default: true
+        type: boolean
+      enable_web:
+        description: "Build Web"
+        required: false
+        default: true
+        type: boolean
+      enable_ios:
+        description: "Build IOS"
+        required: false
+        default: true
+        type: boolean
+      enable_windows:
+        description: "Build Windows"
+        required: false
+        default: true
+        type: boolean
+      enable_linux:
+        description: "Build Linux"
+        required: false
+        default: true
+        type: boolean
+      enable_macos:
+        description: "Build MacOS"
+        required: false
+        default: true
+        type: boolean
+      upload_pages_artifact:
+        description: "Upload build artifact for GH pages"
+        required: false
+        default: false
+        type: boolean
+  workflow_call:
+    inputs:
+      flutter_version:
+        required: false
+        default: "3.27.3"
+        type: string
+      flutter_channel:
+        required: false
+        default: "stable"
+        type: string
+      enable_android:
+        required: false
+        default: true
+        type: boolean
+      enable_web:
+        required: false
+        default: true
+        type: boolean
+      enable_ios:
+        required: false
+        default: true
+        type: boolean
+      enable_windows:
+        required: false
+        default: true
+        type: boolean
+      enable_linux:
+        required: false
+        default: true
+        type: boolean
+      enable_macos:
+        required: false
+        default: true
+        type: boolean
+      upload_pages_artifact:
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    if: inputs.enable_windows
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ inputs.flutter_version }}
+          channel: ${{ inputs.flutter_channel }}
+      - uses: bluefireteam/melos-action@v3
+
+      - name: Example app - Build Windows app
+        working-directory: ./packages/audioplayers/example
+        run: flutter build windows --release
+
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: buildWindows
+          path: |
+            ./packages/audioplayers/example/build/windows/x64/runner/Release
