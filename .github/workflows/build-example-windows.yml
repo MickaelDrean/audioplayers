@@ -1,4 +1,4 @@
-name: build example
+name: build example only windows
 on:
   workflow_dispatch:
     inputs:
